@@ -1,0 +1,56 @@
+This is gem5 extension to support modeling of Newcache
+
+1. to build the simulator, type
+   
+   scons build/ARCH/gem5.opt
+
+   where ARCH can be one of X86, ARM, ALPHA and so on. For more information, check out: http://www.gem5.org/Introduction
+
+2. running gem5 with Newcache (for both SE and FS mode) is of no difference than running gem5 with other caches except some extra command line options, which are summarized below:
+
+--l1d_alg/l1i_alg/l2_alg/l3_alg
+
+replacement algorithm, possible value: "NEWCACHE", "LRU" (default)
+
+--l1d_nebit/l1i_nebit/l2_nebit/l3_nebit
+
+number of extra index bits, default is 4
+
+note that --l1d_assoc/l1i_assoc/l2_assoc/l3_assoc needs to be changed accordingly for Newcache, which represents the total number of cache lines
+
+
+
+3. There are some more command line options specific to system call emulation (SE) mode to set protection bit for a process, by default, no memory region is protected.
+
+--need_protect 
+
+indicate the process is security sensitive
+
+--protected_start
+
+start file offset of the protected region
+
+--protected_end
+
+end file offset of the protected region
+
+
+
+4. In full system (FS) mode, both processor-side interface and OS-side interface are required to set the protection bit (by default, protection bit is not set). The processor-side interface needs to provide either a new instruction or a new page table field to indicate the protection bit. We implemented page-based protection for x86. We use bit 11 (available for programmer) in the page table entry as protection bit. OS-side interface is the new system call (or extending the existing system call) to set the protection bit.
+
+Similarly, RMT_ID is 0 by default and both processor-side interface and OS-side interface are required to set the RMT_ID. For x86, we use the reserved control register 1 (CR1) as the processor-side interface to store the RMT_ID. OS is responsible to set RMT_ID and resolve any potential read-write synonym.
+
+
+
+5. We provide two example scripts for SE and FS mode, respectively, as regression test, under regression directory
+5.1 aes.sh (SE mode)
+this script shows how to run a security sensitive program with Newcache. The python configuration script used is configs/example/se_newcache.py
+
+5.2 hello.sh and hello_checkpoint.sh (FS mode)
+these scripts show how to run a program in FS mode with Newcache. The .rcS script can be found under configs/boot/hello.rcS, and the binary is contained in the linux-x86.img. We first take a checkpoint after booting the OS (by running hello_checkpoint.sh), and the checkpoint is under the directory regression/hello. Then we run hello.sh to skip the booting of OS with Newcache. 
+
+
+  
+
+
+
