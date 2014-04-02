@@ -49,7 +49,7 @@ this script shows how to run a security sensitive program with Newcache. The pyt
 5.2 hello.sh and hello_checkpoint.sh (FS mode)
 these scripts show how to run a program in FS mode with Newcache. The .rcS script can be found under configs/boot/hello.rcS, and the binary is contained in the linux-x86.img. We first take a checkpoint after booting the OS (by running hello_checkpoint.sh), and the checkpoint is under the directory regression/hello. Then we run hello.sh to skip the booting of OS with Newcache. 
 
-
+6. the disk image and linux kernel can be downloaded in gem5's website http://www.gem5.org
   
 
 
